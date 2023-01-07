@@ -30,9 +30,23 @@ async def route_all():
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_select_all = 'SELECT id, route_name, visibility from routes' 
+    sql_select_all = 'SELECT id, route_name, visibility FROM routes' 
     cursor.execute(sql_select_all)
     routes_result = cursor.fetchall()
 
     return {"rotues": routes_result}
 
+@app.get("/routes/{route_id}")
+async def get_route(route_id: str):
+    targetdb_name = 'route_' + route_id + ".db"
+    print("[DEBUG] Target: "+targetdb_name) #debug
+
+    connection = sqlite3.connect(targetdb_name)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+
+    sql_select_all = 'SELECT * FROM route'
+    cursor.execute(sql_select_all)
+    result = cursor.fetchall()
+
+    return {"routeId": route_id, "route": result}
