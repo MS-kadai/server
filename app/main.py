@@ -52,3 +52,15 @@ async def get_route(route_id: str):
 
     return {"routeId": route_id, "route": result}
 
+@app.get("/tracker/list")
+async def tracker_all():
+    connection = sqlite3.connect(tracker_db)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+
+    sql_select_all = 'SELECT * FROM trackers'
+    cursor.execute(sql_select_all)
+    result = cursor.fetchall()
+
+    return {"trackers": result}
+
