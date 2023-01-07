@@ -8,6 +8,13 @@ app = FastAPI()
 route_db = "route.db"
 main_db = "main.db"
 
+# https://qiita.com/nekobake/items/aebd40e07037fc7911bc
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
 @app.get("/meta/time")
 async def server_time():
     return {"date_time": datetime.datetime.now()}
@@ -17,13 +24,15 @@ async def server_ver():
     # ちゃんと別ファイルで管理したい(できるとは言ってない)
     return {"version": "hoge"}
 
-@app.get("/route/") #visibilityつくってるんだからそれはこっちで処理するべきかも？
+@app.get("/routes/") #visibilityつくってるんだからそれはこっちで処理するべきかも？
 async def route_all():
     connection = sqlite3.connect(route_db)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
 
     sql_select_all = 'SELECT id, route_name, visibility from routes' 
     cursor.execute(sql_select_all)
     routes_result = cursor.fetchall()
 
-    return {"test": str(routes_result)}
+    return {"rotues": routes_result}
+
