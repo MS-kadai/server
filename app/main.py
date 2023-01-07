@@ -6,6 +6,7 @@ import datetime
 app = FastAPI()
 
 route_db = "route.db"
+tracker_db = "tracker.db"
 main_db = "main.db"
 
 # https://qiita.com/nekobake/items/aebd40e07037fc7911bc
@@ -50,3 +51,4 @@ async def get_route(route_id: str):
     result = cursor.fetchall()
 
     return {"routeId": route_id, "route": result}
+
