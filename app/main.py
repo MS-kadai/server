@@ -2,6 +2,7 @@ from starlette.exceptions import HTTPException
 from fastapi import FastAPI
 import sqlite3
 import datetime
+import os
 
 app = FastAPI()
 
@@ -25,8 +26,14 @@ async def server_ver():
     # ちゃんと別ファイルで管理したい(できるとは言ってない)
     return {"version": "hoge"}
 
-@app.get("/routes/") #visibilityつくってるんだからそれはこっちで処理するべきかも？
+@app.get("/route/list") #visibilityつくってるんだからそれはこっちで処理するべきかも？
 async def route_all():
+
+    if os.path.exists(route_db): #データベース存在チェック
+        pass
+    else:
+        raise HTTPException(status_code=500, detail=route_db+"_DOES_NOT_EXIST")
+
     connection = sqlite3.connect(route_db)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
@@ -37,10 +44,15 @@ async def route_all():
 
     return {"rotues": routes_result}
 
-@app.get("/routes/{route_id}")
+@app.get("/route/{route_id}")
 async def get_route(route_id: str):
     targetdb_name = 'route_' + route_id + ".db"
     print("[DEBUG] Target: "+targetdb_name) #debug
+
+    if os.path.exists(targetdb_name): #データベース存在チェック
+        pass
+    else:
+        raise HTTPException(status_code=500, detail=targetdb_name+"_DOES_NOT_EXIST")
 
     connection = sqlite3.connect(targetdb_name)
     connection.row_factory = dict_factory
@@ -54,6 +66,11 @@ async def get_route(route_id: str):
 
 @app.get("/tracker/list")
 async def tracker_all():
+    if os.path.exists(tracker_db):
+        pass
+    else:
+        raise HTTPException(status_code=500, detail=tracker_db+"_DOES_NOT_EXIST")
+
     connection = sqlite3.connect(tracker_db)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
