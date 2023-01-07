@@ -66,7 +66,7 @@ async def get_route(route_id: str):
 
 @app.get("/tracker/list")
 async def tracker_all():
-    if os.path.exists(tracker_db):
+    if os.path.exists(tracker_db): #データベース存在チェック
         pass
     else:
         raise HTTPException(status_code=500, detail=tracker_db+"_DOES_NOT_EXIST")
