@@ -9,6 +9,7 @@ app = FastAPI()
 route_db = "route.db"
 tracker_db = "tracker.db"
 main_db = "main.db"
+session_db = "sessions.db"
 
 # https://qiita.com/nekobake/items/aebd40e07037fc7911bc
 def dict_factory(cursor, row):
@@ -98,4 +99,18 @@ async def get_tracker(tracker_id: str):
 
     return {"tracker_id": tracker_id, "detail": result} 
 
-    
+@app.post("/session/create")
+async def create_session(session_id: str): #セッションIDはUUIDを想定
+    connection = sqlite3.connect(session_db)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+
+    sql_create_table = 'IF NOT EXISTS (CREATE TABLE '+session_id+' (eventId integer, point_id integer, timestamp datetime))' #テーブル作成
+    cursor.execute(sql_create_table)
+    connection.commit()
+
+    return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(そのうちなんとかする)
+
+
+
+
