@@ -83,6 +83,11 @@ async def tracker_all():
 
 @app.get("/tracker/{tracker_id}")
 async def get_tracker(tracker_id: str):
+    if os.path.exists(tracker_db): #データベース存在チェック
+        pass
+    else:
+        raise HTTPException(status_code=500, detail=tracker_db+"_DOES_NOT_EXIST")
+
     connection = sqlite3.connect(tracker_db)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
