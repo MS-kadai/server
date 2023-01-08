@@ -111,6 +111,15 @@ async def create_session(session_id: str): #セッションIDはUUIDを想定
 
     return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(そのうちなんとかする)
 
+@app.get("/session/{session_id}")
+async def get_session_status(session_id: str):
+    connection = sqlite3.connect(session_db)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
 
+    sql_select_all = 'SELECT * FROM '+session_id #TOOD 並べ替え
+    cursor.execute(sql_select_all)
+    result = cursor.fetchall()
 
+    return {"session_id": session_id, "result": result}
 
