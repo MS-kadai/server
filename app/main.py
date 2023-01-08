@@ -24,10 +24,10 @@ async def server_time():
 
 @app.get("/meta/version")
 async def server_ver():
-    # ちゃんと別ファイルで管理したい(できるとは言ってない)
+    #TODO ちゃんと別ファイルで管理したい(できるとは言ってない)
     return {"version": "hoge"}
 
-@app.get("/route/list") #visibilityつくってるんだからそれはこっちで処理するべきかも？
+@app.get("/route/list") #TODO visibilityつくってるんだからそれはこっちで処理するべきかも？
 async def route_all():
 
     if os.path.exists(route_db): #データベース存在チェック
@@ -114,7 +114,7 @@ async def create_session(session_id: str): #セッションIDはUUIDを想定
     connection.commit()
 
     connection.close()
-    return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(そのうちなんとかする)
+    return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(TODO そのうちなんとかする)
 
 @app.get("/session/{session_id}")
 async def get_session_status(session_id: str):
@@ -128,4 +128,4 @@ async def get_session_status(session_id: str):
 
     connection.close()
     return {"session_id": session_id, "result": result}
-#TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
+    #TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
