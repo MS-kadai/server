@@ -43,6 +43,7 @@ async def route_all():
     cursor.execute(sql_select_all)
     routes_result = cursor.fetchall()
 
+    connection.close()
     return {"rotues": routes_result}
 
 @app.get("/route/{route_id}")
@@ -63,6 +64,7 @@ async def get_route(route_id: str):
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
+    connection.close()
     return {"routeId": route_id, "route": result}
 
 @app.get("/tracker/list")
@@ -80,6 +82,7 @@ async def tracker_all():
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
+    connection.close()
     return {"trackers": result}
 
 @app.get("/tracker/{tracker_id}")
@@ -97,6 +100,7 @@ async def get_tracker(tracker_id: str):
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
+    connection.close()
     return {"tracker_id": tracker_id, "detail": result} 
 
 @app.post("/session/create")
@@ -109,6 +113,7 @@ async def create_session(session_id: str): #セッションIDはUUIDを想定
     cursor.execute(sql_create_table)
     connection.commit()
 
+    connection.close()
     return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(そのうちなんとかする)
 
 @app.get("/session/{session_id}")
@@ -121,5 +126,6 @@ async def get_session_status(session_id: str):
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
+    connection.close()
     return {"session_id": session_id, "result": result}
 #TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
