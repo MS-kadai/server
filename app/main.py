@@ -81,3 +81,16 @@ async def tracker_all():
 
     return {"trackers": result}
 
+@app.get("/tracker/{tracker_id}")
+async def get_tracker(tracker_id: str):
+    connection = sqlite3.connect(tracker_db)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+
+    sql_select_all = 'SELECT * FROM tracker_'+tracker_id
+    cursor.execute(sql_select_all)
+    result = cursor.fetchall()
+
+    return {"tracker_id": tracker_id, "detail": result} 
+
+    
