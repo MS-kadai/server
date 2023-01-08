@@ -105,7 +105,7 @@ async def create_session(session_id: str): #セッションIDはUUIDを想定
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_create_table = 'IF NOT EXISTS (CREATE TABLE '+session_id+' (eventId integer, point_id integer, timestamp datetime))' #テーブル作成
+    sql_create_table = 'CREATE TABLE IF NOT EXISTS "'+session_id+'" (eventId integer, point_id integer, timestamp datetime)' #テーブル作成
     cursor.execute(sql_create_table)
     connection.commit()
 
