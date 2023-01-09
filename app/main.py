@@ -44,7 +44,7 @@ async def route_all():
     routes_result = cursor.fetchall()
 
     connection.close()
-    return {"rotues": routes_result}
+    return {"legth": len(routes_result), "rotues": routes_result}
 
 @app.get("/route/{route_id}")
 async def get_route(route_id: str):
@@ -65,7 +65,7 @@ async def get_route(route_id: str):
     result = cursor.fetchall()
 
     connection.close()
-    return {"routeId": route_id, "route": result}
+    return {"length": len(result), "route": result}
 
 @app.get("/tracker/list")
 async def tracker_all():
@@ -83,7 +83,7 @@ async def tracker_all():
     result = cursor.fetchall()
 
     connection.close()
-    return {"trackers": result}
+    return {"length": len(result), "trackers": result}
 
 @app.get("/tracker/{tracker_id}")
 async def get_tracker(tracker_id: str):
@@ -127,7 +127,7 @@ async def get_session_status(session_id: str):
     result = cursor.fetchall()
 
     connection.close()
-    return {"session_id": session_id, "result": result}
+    return {"length": len(result), "result": result}
     #TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
 
 #TODO セッション終了を作らないといけない（一定期間後に削除してほしい、時間があったら実装する）
