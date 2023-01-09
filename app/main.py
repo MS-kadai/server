@@ -129,3 +129,6 @@ async def get_session_status(session_id: str):
     connection.close()
     return {"session_id": session_id, "result": result}
     #TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
+
+#TODO セッション終了を作らないといけない（一定期間後に削除してほしい、時間があったら実装する）
+
