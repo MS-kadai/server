@@ -112,7 +112,6 @@ async def create_session(session_id: str, route_id: str): #セッションIDはU
     cursor_route_db.execute(sql_select_active_session)
     result_route_db = cursor_route_db.fetchone()
     result_route_db_dict = dict(result_route_db)
-    print(result_route_db_dict["active_session"]) #debug
 
     if result_route_db_dict["active_session"] != None: #既にセッションがある場合
         raise HTTPException(status_code=500, detail="SESSION_ALREADY_EXISTS")
