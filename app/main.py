@@ -16,6 +16,10 @@ class createSession(BaseModel):
     session_id: str
     route_id: str
 
+class updateSession(BaseModel):
+    point_id: str
+    timestamp: str
+
 
 # https://qiita.com/nekobake/items/aebd40e07037fc7911bc
 def dict_factory(cursor, row):
@@ -126,7 +130,7 @@ async def create_session(createSession: createSession): #セッションIDはUUI
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_create_table = 'CREATE TABLE IF NOT EXISTS "'+createSession.session_id+'" (eventId integer, point_id integer, timestamp datetime)' #テーブル作成
+    sql_create_table = 'CREATE TABLE IF NOT EXISTS "'+createSession.session_id+'" (eventId INTEGER PRIMARY KEY, point_id integer, timestamp text)' #テーブル作成
     cursor.execute(sql_create_table)
     connection.commit()
 
@@ -175,6 +179,20 @@ async def delete_session(session_id: str):
     connection.close()
     connection_route_db.close()
     return {"result": "deleted"}
+
+@app.post("/session/{session_id}/add") #updateで投げるべきな気はするけどよくわからんのでとりあえずpost
+async def update_session(session_id: str, updateSession: updateSession):
+    connection = sqlite3.connect(session_db)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+
+    sql_insert = 'INSERT INTO "'+session_id+'" (point_id, timestamp) VALUES ('+updateSession.point_id+', "'+str(updateSession.timestamp)+'")'
+    cursor.execute(sql_insert)
+    connection.commit()
+
+    connection.close()
+    return {"result": "updated"}
+
 
 
 
