@@ -148,3 +148,24 @@ async def get_session_status(session_id: str):
 
 #TODO セッション終了を作らないといけない（一定期間後に削除してほしい、時間があったら実装する）
 
+@app.delete("session/delete")  #即削除じゃなくてフラグ建ててあとから見返したりもできるようにするべきかも
+async def delete_session(session_id: str):
+
+    connection_route_db = sqlite3.connect(route_db)
+    connection_route_db.row_factory = dict_factory
+    cursor_route_db = connection_route_db.cursor()
+    sql_delete_active_session = 'UPDATE routes SET active_session = NULL WHERE active_session = "'+session_id+'"'
+    cursor_route_db.execute(sql_delete_active_session)
+    connection_route_db.commit()
+
+    connection = sqlite3.connect(session_db)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+
+    sql_delete_table = 'DROP TABLE "'+session_id+'"' 
+    cursor.execute(sql_delete_table)
+    connection.commit()
+
+    connection.close()
+    return {"result": "deleted"}
+
