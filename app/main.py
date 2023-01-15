@@ -110,7 +110,7 @@ async def create_session(session_id: str, route_id: str): #セッションIDはU
     cursor_route_db = connection_route_db.cursor()
     sql_select_active_session = "SELECT active_session FROM routes WHERE id = "+route_id
     cursor_route_db.execute(sql_select_active_session)
-    result = cursor_route_db.fetchall()
+    result_route_db = cursor_route_db.fetchall()
     connection_route_db.close()
 
     if result[0]["active_session"] != "": #既にセッションがある場合
