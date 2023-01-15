@@ -180,7 +180,7 @@ async def delete_session(session_id: str):
     connection_route_db.close()
     return {"result": "deleted"}
 
-@app.post("/session/{session_id}/update") #updateで投げるべきな気はするけどよくわからんのでとりあえずpost
+@app.post("/session/{session_id}/add") #updateで投げるべきな気はするけどよくわからんのでとりあえずpost
 async def update_session(session_id: str, updateSession: updateSession):
     connection = sqlite3.connect(session_db)
     connection.row_factory = dict_factory
