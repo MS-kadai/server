@@ -24,10 +24,10 @@ async def server_time():
 
 @app.get("/meta/version")
 async def server_ver():
-    # ちゃんと別ファイルで管理したい(できるとは言ってない)
+    #TODO ちゃんと別ファイルで管理したい(できるとは言ってない)
     return {"version": "hoge"}
 
-@app.get("/route/list") #visibilityつくってるんだからそれはこっちで処理するべきかも？
+@app.get("/route/list") #TODO visibilityつくってるんだからそれはこっちで処理するべきかも？
 async def route_all():
 
     if os.path.exists(route_db): #データベース存在チェック
@@ -43,7 +43,8 @@ async def route_all():
     cursor.execute(sql_select_all)
     routes_result = cursor.fetchall()
 
-    return {"rotues": routes_result}
+    connection.close()
+    return {"length": len(routes_result), "rotues": routes_result}
 
 @app.get("/route/{route_id}")
 async def get_route(route_id: str):
@@ -63,7 +64,8 @@ async def get_route(route_id: str):
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
-    return {"routeId": route_id, "route": result}
+    connection.close()
+    return {"length": len(result), "route": result}
 
 @app.get("/tracker/list")
 async def tracker_all():
@@ -80,7 +82,8 @@ async def tracker_all():
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
-    return {"trackers": result}
+    connection.close()
+    return {"length": len(result), "trackers": result}
 
 @app.get("/tracker/{tracker_id}")
 async def get_tracker(tracker_id: str):
@@ -97,6 +100,7 @@ async def get_tracker(tracker_id: str):
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
+    connection.close()
     return {"tracker_id": tracker_id, "detail": result} 
 
 @app.post("/session/create")
@@ -105,11 +109,12 @@ async def create_session(session_id: str): #セッションIDはUUIDを想定
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_create_table = 'IF NOT EXISTS (CREATE TABLE '+session_id+' (eventId integer, point_id integer, timestamp datetime))' #テーブル作成
+    sql_create_table = 'CREATE TABLE IF NOT EXISTS "'+session_id+'" (eventId integer, point_id integer, timestamp datetime)' #テーブル作成
     cursor.execute(sql_create_table)
     connection.commit()
 
-    return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(そのうちなんとかする)
+    connection.close()
+    return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(TODO そのうちなんとかする)
 
 @app.get("/session/{session_id}")
 async def get_session_status(session_id: str):
@@ -117,9 +122,13 @@ async def get_session_status(session_id: str):
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_select_all = 'SELECT * FROM '+session_id #TOOD 並べ替え
+    sql_select_all = 'SELECT * FROM "'+session_id+'"' #TODO 並べ替え
     cursor.execute(sql_select_all)
     result = cursor.fetchall()
 
-    return {"session_id": session_id, "result": result}
+    connection.close()
+    return {"length": len(result), "result": result}
+    #TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
+
+#TODO セッション終了を作らないといけない（一定期間後に削除してほしい、時間があったら実装する）
 
