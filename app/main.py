@@ -1,4 +1,5 @@
 from starlette.exceptions import HTTPException
+from pydantic import BaseModel
 from fastapi import FastAPI
 import sqlite3
 import datetime
@@ -10,6 +11,11 @@ route_db = "route.db"
 tracker_db = "tracker.db"
 main_db = "main.db"
 session_db = "sessions.db"
+
+class createSession(BaseModel):
+    session_id: str
+    route_id: str
+
 
 # https://qiita.com/nekobake/items/aebd40e07037fc7911bc
 def dict_factory(cursor, row):
@@ -104,11 +110,11 @@ async def get_tracker(tracker_id: str):
     return {"tracker_id": tracker_id, "detail": result} 
 
 @app.post("/session/create")
-async def create_session(session_id: str, route_id: str): #セッションIDはUUIDを想定
+async def create_session(createSession: createSession): #セッションIDはUUIDを想定
     connection_route_db = sqlite3.connect(route_db)
     connection_route_db.row_factory = dict_factory
     cursor_route_db = connection_route_db.cursor()
-    sql_select_active_session = "SELECT active_session FROM routes WHERE id = "+route_id
+    sql_select_active_session = "SELECT active_session FROM routes WHERE id = "+createSession.route_id
     cursor_route_db.execute(sql_select_active_session)
     result_route_db = cursor_route_db.fetchone()
     result_route_db_dict = dict(result_route_db)
@@ -120,11 +126,11 @@ async def create_session(session_id: str, route_id: str): #セッションIDはU
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_create_table = 'CREATE TABLE IF NOT EXISTS "'+session_id+'" (eventId integer, point_id integer, timestamp datetime)' #テーブル作成
+    sql_create_table = 'CREATE TABLE IF NOT EXISTS "'+createSession.session_id+'" (eventId integer, point_id integer, timestamp datetime)' #テーブル作成
     cursor.execute(sql_create_table)
     connection.commit()
 
-    sql_update_active_session = 'UPDATE routes SET active_session = "'+session_id+'" WHERE id = '+route_id
+    sql_update_active_session = 'UPDATE routes SET active_session = "'+createSession.session_id+'" WHERE id = '+createSession.route_id
     cursor_route_db.execute(sql_update_active_session)
     connection_route_db.commit()
 
