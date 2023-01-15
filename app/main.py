@@ -44,7 +44,7 @@ async def route_all():
     routes_result = cursor.fetchall()
 
     connection.close()
-    return {"length": len(routes_result), "rotues": routes_result}
+    return {"length": len(routes_result), "routes": routes_result}
 
 @app.get("/route/{route_id}")
 async def get_route(route_id: str):
