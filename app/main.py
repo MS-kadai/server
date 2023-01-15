@@ -17,7 +17,7 @@ class createSession(BaseModel):
     route_id: str
 
 class updateSession(BaseModel):
-    point_id: int
+    point_id: str
     timestamp: str
 
 
@@ -186,7 +186,7 @@ async def update_session(session_id: str, updateSession: updateSession):
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_insert = 'INSERT INTO "'+session_id+'" (point_id, timestamp) VALUES ('+str(updateSession.point_id)+', "'+updateSession.timestamp+'")'
+    sql_insert = 'INSERT INTO "'+session_id+'" (point_id, timestamp) VALUES ('+updateSession.point_id+', "'+str(updateSession.timestamp)+'")'
     cursor.execute(sql_insert)
     connection.commit()
 
