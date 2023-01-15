@@ -110,10 +110,11 @@ async def create_session(session_id: str, route_id: str): #セッションIDはU
     cursor_route_db = connection_route_db.cursor()
     sql_select_active_session = "SELECT active_session FROM routes WHERE id = "+route_id
     cursor_route_db.execute(sql_select_active_session)
-    result_route_db = cursor_route_db.fetchall()
-    connection_route_db.close()
+    result_route_db = cursor_route_db.fetchone()
+    result_route_db_dict = dict(result_route_db)
+    print(result_route_db_dict["active_session"]) #debug
 
-    if result[0]["active_session"] != "": #既にセッションがある場合
+    if result_route_db_dict["active_session"] != None: #既にセッションがある場合
         raise HTTPException(status_code=500, detail="SESSION_ALREADY_EXISTS")
 
     connection = sqlite3.connect(session_db)
@@ -124,7 +125,12 @@ async def create_session(session_id: str, route_id: str): #セッションIDはU
     cursor.execute(sql_create_table)
     connection.commit()
 
+    sql_update_active_session = 'UPDATE routes SET active_session = "'+session_id+'" WHERE id = '+route_id
+    cursor_route_db.execute(sql_update_active_session)
+    connection_route_db.commit()
+
     connection.close()
+    connection_route_db.close()
     return {"result": "created"} #普通にレスポンスコードでやるべきだとおもう、というかこれだと作られなくてもわからなくなる(TODO そのうちなんとかする)
 
 @app.get("/session/{session_id}")
