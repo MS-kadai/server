@@ -39,7 +39,7 @@ async def route_all():
     connection.row_factory = dict_factory
     cursor = connection.cursor()
 
-    sql_select_all = 'SELECT id, route_name, visibility FROM routes' 
+    sql_select_all = 'SELECT id, route_name, visibility, active_session FROM routes' 
     cursor.execute(sql_select_all)
     routes_result = cursor.fetchall()
 
@@ -104,7 +104,18 @@ async def get_tracker(tracker_id: str):
     return {"tracker_id": tracker_id, "detail": result} 
 
 @app.post("/session/create")
-async def create_session(session_id: str): #セッションIDはUUIDを想定
+async def create_session(session_id: str, route_id: str): #セッションIDはUUIDを想定
+    connection_route_db = sqlite3.connect(route_db)
+    connection_route_db.row_factory = dict_factory
+    cursor_route_db = connection_route_db.cursor()
+    sql_select_active_session = "SELECT active_session FROM routes WHERE id = "+route_id
+    cursor_route_db.execute(sql_select_active_session)
+    result = cursor_route_db.fetchall()
+    connection_route_db.close()
+
+    if result[0]["active_session"] != "": #既にセッションがある場合
+        raise HTTPException(status_code=500, detail="SESSION_ALREADY_EXISTS")
+
     connection = sqlite3.connect(session_db)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
