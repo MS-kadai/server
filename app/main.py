@@ -1,4 +1,5 @@
 from starlette.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import FastAPI
 import sqlite3
@@ -6,6 +7,15 @@ import datetime
 import os
 
 app = FastAPI()
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 route_db = "route.db"
 tracker_db = "tracker.db"
@@ -156,7 +166,7 @@ async def get_session_status(session_id: str):
     return {"length": len(result), "result": result}
     #TODO セッション作成日時とかを別のデータベースで管理するべきかも（今の仕様だと存在してるセッションを取得するのがめんどくさくなりそう）
 
-#TODO セッション終了を作らないといけない（一定期間後に削除してほしい、時間があったら実装する）
+#TODO セッション終了を作らないといけない（一定期間後に削除してほしい、時間があったら実装する）→半分くらい作った
 
 @app.delete("/session/delete")  #即削除じゃなくてフラグ建ててあとから見返したりもできるようにするべきかも
 async def delete_session(session_id: str):
